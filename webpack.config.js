@@ -7,19 +7,22 @@ const webpack = require('webpack');
 const autoprefixer = require('autoprefixer');
 
 // Ensure the target directory exists.
-const outputPath = __dirname + '/dist';
+const outputPath = path.join(__dirname, 'dist');
 if (!fs.existsSync(outputPath)) {
-  fs.mkdirSync(__dirname + '/dist');
+  fs.mkdirSync(outputPath);
 }
 
 module.exports = {
   entry: {
     application: ['./app'],
     project: ['./lib'],
+    devServer: ['webpack-dev-server/client?http://0.0.0.0:3000'],
+    hotLoader: ['webpack/hot/only-dev-server'],
   },
 
   output: {
     path: outputPath,
+    publicPath: '/assets/',
     filename: '[name].js',
     libraryTarget: 'umd',
     library: 'ReactStarter'
@@ -59,6 +62,10 @@ module.exports = {
     return [autoprefixer];
   },
 
+  plugins: [
+    new webpack.HotModuleReplacementPlugin(),
+  ],
+
   module: {
     loaders: [
       {
@@ -76,6 +83,7 @@ module.exports = {
       {
         test: /\.jsx?$/,
         loaders: [
+          'react-hot',
           'babel-loader?cacheDirectory=true&presets[]=es2015&presets[]=react',
         ],
         exclude: [
